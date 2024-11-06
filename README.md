@@ -11,9 +11,8 @@ The way it does this is via 3 modes (4 if you count the inactive mode)
 
 ## getting started
 to customise your experience with wavedance, before flashing the code to your micro:bit at https://python.microbit.org/v/3 
-you can change the password and messages variables to give you a more unique experience
+you can change the password variable to give you a more unique experience
 - the password must be the same as the user you are intending to send to or it will not send to them
-- the messages also must be the same otherwise they will not receive the correct message
  
 How to navigate the ports
 - press A, to enter **port** mode (providing you arnt in send mode)
@@ -21,9 +20,13 @@ How to navigate the ports
         - A to incriment the port
 - press B, to enter **send** mode
     - In send mode press
-      - B to change the message
-      - A to send the message
-- Shake the device to enter recieve mode
+      - B to type the letter
+      - A to add the letter to the message and take you to a view mode
+            - in the view mode you can
+                - A to backspace
+                - flick down to send
+                - B to add more letters
+- flick the device up to enter receive mode, here you can
   - press nothing and wait for someone to send a message
 
 # overview
