@@ -1,32 +1,25 @@
-import radio
 from microbit import *
+import radio
 
-'''
-    you should change the password and messages variables if youd like unique ones
-    the password will allow people with the same password to message you
-    even if their on the same port or not, and the messages have to be exactly the same
-    as the person your messaging or they wont receive the correct message, the max is 76
-'''
-password = "superSecure"
-messages = [
-    "heyyy"
-]
+# variables yayyy
+alph = "abcdefghijklmnopqrstuvwxyz .!/[]();:0123456789"
+password = "bartshrimpson"
+message = ""
 
-# try not to change anything past here unless you know what youre doing
-mes = 0
+mode = 0
 group = 0
-up = True
-mode = 4
+mess = 0
 
-radio.on()
+up1 = True
+up2 = True
+
+# config
 radio.config(group=group)
 
-# function to change the lights
-def getLight(group):
+# best function yuppers
+def getLight(group=75):
     display.clear()
-
     local_group = group
-
     rows = []
     if group < 25 and group < 25:
         rows = ['00000','00000','00000','00000','00000']
@@ -36,7 +29,6 @@ def getLight(group):
     elif group >= 50:
         rows = ['66666','66666','66666','66666','66666']
         local_group-=50
-    
     for i in range(5):
         for a in range(5):
             if local_group > 0:
@@ -44,68 +36,83 @@ def getLight(group):
                 new[a] = str(int((rows[i][a]))+3)
                 rows[i] = ''.join(new)
                 local_group-=1
-
     for i in range(len(rows)):
         for a in range(len(str(rows[i]))):
             display.set_pixel(i,a,int(rows[a][i]))
-    
-# main program
+
 while True:
-    message = radio.receive()
+    # open mode
+    if mode == 0:
+        display.show(Image.GHOST)
+    # port select mode
+    if mode == 1:
+        if button_a.was_pressed():
+            if up1:
+                group+=1
+            else:
+                group-=1
+            if group == 75 or group == 0:
+                up1 = not up1
+            getLight(group)
+            radio.config(group=group)
 
-    if accelerometer.was_gesture('shake'):
-        display.scroll("receving")
-        mode = 2
-        frames = [
-            "90000:00000:00000:00000:00000",
-            "99000:00000:00000:00000:00000",
-            "99900:00000:00000:00000:00000"
-        ]
-        for frame in frames:
-            display.show(Image(frame))
-            sleep(300)
-            
-    # channel changing
-    elif button_a.was_pressed() and mode != 1:
+    # message send mode
+    elif mode == 2:
+        if button_b.was_pressed():
+            if up2:
+                mess+=1
+            else:
+                mess-=1
+            if mess == len(alph) or mess == 0:
+                up2 = not up2
+            getLight(mess)
+        if button_a.was_pressed():
+            if message is None: message = ""
+            message = message + alph[mess-1]
+            display.scroll(message)
+            mode = 3
 
-        if mode != 0:
+    # message edit mode
+    elif mode == 3:
+        if accelerometer.was_gesture('down'):
+            radio.on()
+            radio.send(password+"|"+str(message))
+            radio.off()
+            display.scroll("sent")
+            message = ""
+            mess = 0
+            mode = 0
+        if button_a.was_pressed():
+            message = str(message)[:-1]
+            display.scroll(message)
+        elif button_b.was_pressed():
+            display.scroll("|")
+            mess = 0
+            mode = 2
+        
+    # message receive mode
+    elif mode == 4:
+        display.show(Image.GHOST)
+        message = radio.receive()
+        if message:
+            secure = message.split("|")
+            print(secure[0])
+            if secure[0] == password:
+                display.scroll(secure[1])
+
+    # mode changing
+    if button_a.was_pressed() and (mode != 2 and mode != 3):
+        if mode!=1:
+            mode=1
             display.scroll("port")
-            
-        mode = 0
-        
-        if up:
-            group+=1
-        else:
-            group-=1
-        if group == 75 or group == 0:
-            up = not up
-        radio.config(group=group)
-        getLight(group)
-
-    elif button_a.was_pressed() and mode == 1:
-        radio.send(password +"|"+ str(mes))
-        display.scroll("sent")
-        mes = 0
-        mode = 4
-
-    # message sending
-    elif button_b.was_pressed():
-
-        if mode != 1:
+        radio.off()
+    if button_b.was_pressed():
+        if mode!=2:
+            mode=2
             display.scroll("send")
-            
-        mode = 1
-        
-        if up:
-            mes+=1
-        else:
-            mes-=1
-        if mes == 75 or mes == 0:
-            up = not up
-        getLight(mes)
-
-    # message interpriter
-    if message and mode == 2:
-        message = str(message).split("|")
-        if message[0] == password:
-            display.scroll(messages[int(message[1])-1])
+        radio.off()
+    if accelerometer.was_gesture('up') and (mode != 2 and mode != 3):
+        if mode!=4:
+            mode=4
+            display.scroll("receive")
+        radio.on()
