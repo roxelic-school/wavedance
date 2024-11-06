@@ -19,7 +19,7 @@ up = True
 mode = 4
 
 radio.on()
-radio.config(group=0)
+radio.config(group=group)
 
 # function to change the lights
 def getLight(group):
