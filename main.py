@@ -2,7 +2,7 @@ from microbit import *
 import radio
 
 # variables yayyy
-alph = "abcdefghijklmnopqrstuvwxyz .!/[]();:0123456789"
+alph = "abcdefghijklmnopqrstuvwxyz.!/[]();:0123456789 "
 password = "bartshrimpson"
 message = ""
 
@@ -92,7 +92,7 @@ while True:
         
     # message receive mode
     elif mode == 4:
-        display.show(Image.GHOST)
+        display.show(Image.SILLY)
         message = radio.receive()
         if message:
             secure = message.split("|")
