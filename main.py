@@ -1,6 +1,9 @@
 from microbit import *
 import radio
 
+# boot
+display.scroll(":3")
+
 # variables yayyy
 alph = "abcdefghijklmnopqrstuvwxyz.!/[]();:0123456789 "
 password = "bartshrimpson"
@@ -107,12 +110,18 @@ while True:
             display.scroll("port")
         radio.off()
     if button_b.was_pressed():
-        if mode!=2:
+        if mode!=2 and mode!=3:
             mode=2
             display.scroll("send")
+        elif mode == 3:
+            mess=0
+            mode=2
+            display.scroll("|")
         radio.off()
     if accelerometer.was_gesture('up') and (mode != 2 and mode != 3):
         if mode!=4:
             mode=4
             display.scroll("receive")
         radio.on()
+    if accelerometer.was_gesture('shake') and (mode != 3):
+        mode=0
